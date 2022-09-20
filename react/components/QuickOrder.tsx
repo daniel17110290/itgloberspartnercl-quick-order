@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useLazyQuery } from "react-apollo";
-//import UPDATE_CART from "../graphql/updateCart.graphql"
+import { useMutation, useLazyQuery } from "react-apollo";
+import UPDATE_CART from "../graphql/updateCart.graphql"
 import GET_PRODUCT from "../graphql/getProductBySku.graphql"
 
 const QuickOrder = () => {
@@ -8,7 +8,7 @@ const QuickOrder = () => {
   const [search, setSearch] = useState("")
 
   const [getProductData, { data: product }] = useLazyQuery(GET_PRODUCT)
-  //const [addToCart] = useMutation(UPDATE_CART)
+  const [addToCart] = useMutation(UPDATE_CART)
 
   const handleChange = (evt: any) => {
     setInputText(evt.target.value)
@@ -17,6 +17,27 @@ const QuickOrder = () => {
 
   useEffect(() => {
     console.log("El resultado de mi producto es:", product, search)
+    if (!product) {
+      alert("Producto no encontrado")
+    } else {
+      let skuId = parseInt(inputText)
+      console.log("mis datos necesarios son:", skuId, product)
+      addToCart({
+        variables: {
+          salesChannel: "1",
+          items: [
+            {
+              id: skuId,
+              quantity: 1,
+              seller: "1"
+            }
+          ]
+        }
+      })
+        .then(() => {
+          window.location.href = "/checkout"
+        })
+    }
   }, [product, search])
 
   const addProductToCart = () => {
