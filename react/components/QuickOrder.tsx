@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useMutation, useLazyQuery } from "react-apollo";
 import UPDATE_CART from "../graphql/updateCart.graphql"
 import GET_PRODUCT from "../graphql/getProductBySku.graphql"
+import styles from "./styles.css"
 
 const QuickOrder = () => {
   const [inputText, setInputText] = useState("");
@@ -17,27 +18,25 @@ const QuickOrder = () => {
 
   useEffect(() => {
     console.log("El resultado de mi producto es:", product, search)
-    if (!product) {
-      alert("Producto no encontrado")
-    } else {
-      let skuId = parseInt(inputText)
-      console.log("mis datos necesarios son:", skuId, product)
-      addToCart({
-        variables: {
-          salesChannel: "1",
-          items: [
-            {
-              id: skuId,
-              quantity: 1,
-              seller: "1"
-            }
-          ]
-        }
+
+    let skuId = parseInt(inputText)
+    console.log("mis datos necesarios son:", skuId, product)
+    addToCart({
+      variables: {
+        salesChannel: "1",
+        items: [
+          {
+            id: skuId,
+            quantity: 1,
+            seller: "1"
+          }
+        ]
+      }
+    })
+      .then(() => {
+        window.location.href = "/checkout"
       })
-        .then(() => {
-          window.location.href = "/checkout"
-        })
-    }
+
   }, [product, search])
 
   const addProductToCart = () => {
@@ -60,14 +59,14 @@ const QuickOrder = () => {
     }
   }
 
-  return <div>
-    <h2>Compra rapida</h2>
-    <form onSubmit={searchProduct}>
+  return <div className={styles.container}>
+    <h2 className={styles.title}>Compra rapida</h2>
+    <form className={styles.form} onSubmit={searchProduct} >
       <div>
-        <label htmlFor="sku">Ingresa el numero de SKU</label>
-        <input id="sku" type="text" onChange={handleChange}></input>
+        <label htmlFor="sku">Ingresa el número de SKU: </label>
+        <input className={styles.input} id="sku" type="text" onChange={handleChange}></input>
       </div>
-      <input type="submit" value="añadir al carrito" />
+      <input className={styles.button} type="submit" value="añadir al carrito" />
     </form>
   </div>
 }
